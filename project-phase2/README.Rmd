@@ -1,0 +1,12 @@
+---
+title: "GSS Analysis README"
+author: "Brianne Calandra"
+date: "June 21, 2015"
+output: html_document
+---
+
+In this paper, I will use analysis to answer the question: Is there a relationship between an individual's confidence in organized religion and his or her opinion on space exploration spending?
+
+The data that I will use for this analysis comes from the General Social Survey Cumulative File, specifically the 1972-2012 Coursera Extract.  The dataset that I will use was "cleaned" for this Coursera course to make it easier to use - missing values have been removed and factor variables have been added for ease of use.  The original dataset was collected by the General Social Survey, in face to face interviews with subjects and, in later years, some computer-assisted interviews.  FAQ on the original dataset can be [accessed by clicking here.](http://www3.norc.org/GSS/Templates/BaseTemplate.aspx?NRMODE=Published&NRNODEGUID=%7B2E75FB22-4D36-474F-AA28-97D9A2C04B6C%7D&NRORIGINALURL=%2FGSS%2BWebsite%2FFAQs%2F&NRCACHEHINT=NoModifyGuest#6) The codebook for the Coursera Extract can be [accessed by clicking here.](https://d396qusza40orc.cloudfront.net/statistics%2Fproject%2Fgss1.html)
+
+The cases I'll be analyzing are individual reponses to two survey questions in a given year. The full dataset that was provided by the course has 57061 cases.
