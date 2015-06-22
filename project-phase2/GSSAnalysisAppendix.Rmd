@@ -1,0 +1,13 @@
+---
+title: "GSS Analysis Appendix"
+author: "Brianne Calandra"
+date: "April 19, 2015"
+output: html_document
+---
+Below is a sample extract of the original data use, the last 100 cases in the dataset.
+```{r}
+load(url("http://bit.ly/dasi_gss_data"))
+tail(gss[,c("natspac","conclerg")],100)
+
+```
+

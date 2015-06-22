@@ -1,0 +1,181 @@
+---
+title: Exploring the Relationship Between Confidence in Organized Religion and Opinions
+  on Space Exploration Spending
+author: brikc
+date: "April 17, 2015"
+output: html_document
+---
+
+### Introduction:
+
+In this paper, I will use analysis to answer the question: Is there a relationship between an individual's confidence in organized religion and his or her opinion on space exploration spending?
+
+I care about this question because I'm interested to see if this data shows that someone's opinions on religious organizations have an affect on their scientific beliefs, and one example of a scientific belief is a person's opinion on the importance of space exploration. I often read articles and hear opinions stating that people with strong faith and support of religion are less supportive of science. This analysis is a way to further explore the validity of those statements.
+
+Other people should care about this because, in the United States, there is supposed to be a separation of church and state.  However, in practice, there is much crossover between the two and religious opinion often drives support for or against certain legislation.  For example, abortion, the environment and gay marriage are all topics where a person's opinion can be affected by their religious beliefs. Space exploration has been largely funded by the US government through agencies like NASA (though this is changing with private companies) and that funding is dependent on voter support. So this analysis is of interest to anyone who has curiousities about how confidence in religion and scientific opinions are related.
+
+### Data:
+
+The data that I will use for this analysis comes from the General Social Survey Cumulative File, specifically the 1972-2012 Coursera Extract.  The dataset that I will use was "cleaned" for this Coursera course to make it easier to use - missing values have been removed and factor variables have been added for ease of use.  The original dataset was collected by the General Social Survey, in face to face interviews with subjects and, in later years, some computer-assisted interviews.  FAQ on the original dataset can be [accessed by clicking here.](http://www3.norc.org/GSS/Templates/BaseTemplate.aspx?NRMODE=Published&NRNODEGUID=%7B2E75FB22-4D36-474F-AA28-97D9A2C04B6C%7D&NRORIGINALURL=%2FGSS%2BWebsite%2FFAQs%2F&NRCACHEHINT=NoModifyGuest#6) The codebook for the Coursera Extract can be [accessed by clicking here.](https://d396qusza40orc.cloudfront.net/statistics%2Fproject%2Fgss1.html)
+
+The cases I'll be analyzing are individual reponses to two survey questions in a given year. The full dataset that was provided by the course has 57061 cases.
+
+The two variables that I will be looking at are both ordinal categorical variables. The explanatory variable is "conclerg" which indicates the respondants level of confidence in organized religion (A Great Deal, Only Some, Hardly Any).  The response variable is "natpsac" which indicates the respondants opinion on the amount of government spending which goes to the space program (Too Little, About Right, Too Much).
+
+This is a retrospective observational study, since I'll be referencing a dataset that has already been collected.  This is not an experiment because I will not be randomly assigning subjects to treatments.
+
+The population of interest are people living in the United States. In order for an analysis to be generalizable to this population, data must be collected randomly to ensure independence. The [Wikipedia entry](http://en.wikipedia.org/wiki/General_Social_Survey) for this survey states that this data is collected randomly, and there has been much discussion in the class about whether or not this GSS data meets the criteria necessary for generalizability. For the purposes of this project, I am treating this data as sufficiently random, in order to perform analysis with the techniques we've been learning.
+
+Additionally, the extract of data that I'm using for this course does not include a variable indicating city or state where the respondant lives, only region. Without more specific geographical data, it's not possible to determine if the survey data is representative of the US as a whole, and so there could be additional bias caused by convenience sample.  
+
+Furthermore, exploratory analysis of other combinations of variables resulted in extremely low or completely missing values. Therefore, analysis attempted on these such variables would be biased for lack of data.
+
+Regarding causality, my analysis will not establish causal links.  In order to have causal links, it's necessary to perform an experiment which includes random assignment.  This is an observational study only.
+
+### Exploratory data analysis: 
+
+To explore, first I load the data and create a table for the variables of interest:
+```{r}
+load(url("http://bit.ly/dasi_gss_data"))
+data<-table(gss$natspac, gss$conclerg)
+margintable<-addmargins(data)
+data
+```
+This contingency table shows that there appear to be a sufficient number of cases for each scenario to perform analysis.
+
+Next, I use a mosaic plot to look at the proportion of responses for each variable:
+
+```{r}
+plot(gss$conclerg,gss$natspac,xlab="Level of Confidence in Organized Religion",ylab="Opinion of Space Program Spending")
+```
+
+The explanatory variable in my study is a person's level of confidence in organized religion, and the response variable is their opinion on space program spending. The vertical locations at which the organized religion groups break into the Too Little, About Right, and Too Much categories for space program spending differ, which suggests that the variables appear to be dependent.  The analysis will provide clarity into whether these differences are statistically significant.
+
+### Inference:
+
+This section will cover the steps taken for statistical inference.
+
+####Hypothesis
+
+$H_{0}$: Opinions on government spending for space exploration and confidence in organized religion are <u>independent</u>. Opinions on space spending <u>do not vary</u> based on confidence in organized religion.
+
+$H_{A}$ Opinions on government spending for space exploration and confidence in organized religion are <u>dependent</u>. Opinions on space spending <u>do vary</u> based on confidence in organized religion.
+
+My analysis will quantify how different the observed counts are from the expected counts.  Large deviations from what would be expected based on chance alone would provide strong evidence in support of the alternative hypothesis ($H_{A}$).
+
+####Method
+
+For this hypothesis, I'm dealing with two categorical variables, both of which have more than 2 levels.  So I will use the Chi-Square Independence Test.  Since both categorical variables have more than two levels, I am only able to perform a hypothesis test, because there are no associated confidence interval available for this scenario.
+
+####Conditions Check
+
+Below are the conditions necessary for performing the Chi-Square Independence Test, and whether or not my data meets these conditions.
+
+1. Independence: Sampled observations must be independent:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&#10004; <i>Random sample/assignment</i> - As stated in the introduction, we are treating this data as sufficiently random based on the description of the data collection methods in the GSS FAQ
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&#10004; <i>If sampling without replacement, n<10% of popultion</i> - The number of cases is definitely less than ten percent of the population of the US.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&#10004; <i>Each case only contributes to one cell in the table</i> - Since each case in the original dataset allows for only one answer to each question, we can confirm that each case only represents one cell in the table.
+
+2. Sample size
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&#10004; <i>Each cell must have at least 5 expected cases</i> - The table we'll use for this analysis has many more than 5 cases in each cell.
+
+
+####Inference Calculations
+
+The summary function in R performs the Chi-Square Independence Test, which makes this work very easy.  However, I will perform the analysis step-by-step with R code in order to demonstrate my understanding of how this works. NOTE: I realize my R code is highly ineloquent, but I hacked it together based on limited time.
+
+```{r}
+# First calculate row total proportions
+rowper <- prop.table(as.table(margintable[1:3,4]))
+
+# Here's the proportions we will multiply by:
+rowper
+
+# Next multiply first row total proportion with column totals for first row in expected table
+row1<-margintable[4,1:3]*rowper[1]
+
+# Repeat to get next two rows
+row2<-margintable[4,1:3]*rowper[2]
+row3<-margintable[4,1:3]*rowper[3]
+
+# Bind them together to get a new table of expected values
+expected<-rbind(row1,row2,row3)
+
+# Here's the table of expected values:
+expected
+
+# And here's the original table of observed values:
+data
+
+# Calculate the chi-square statistic using the data table and the expected table
+chiterms<-(data-expected)^2/expected
+
+# This table represents the numbers that need to be totaled to get the final chi-square statistic
+chiterms
+
+# Add margins to this table and print the final total, which is our chi-statistic:
+chiterms<-addmargins(chiterms)
+chistat<-chiterms[4,4]
+chistat
+
+# To calculate the degrees of freedom for our data, it's (#rows-1)*(#cols-1):
+df<-(nrow(data)-1)*(ncol(data)-1)
+df
+
+# Finally, using the chi-square statistic and degrees of freedom, we can use the built-in R function to calculate our p-value:
+pchisq(chistat,df,lower.tail=FALSE)
+
+```
+
+We can verify that our step-by-step calculations match what R gives us through the summary function:
+
+```{r}
+summary(data)
+```
+
+
+####Results
+
+Based on the calculations above, this data has a chi-square statistic of 164.1179, degrees of freedom of 4 and a p-value of 1.912687e-34 (which is very, very small).  Since this p-value is much smaller than our significance level (.05) we can determine that we can reject the null hypothesis in favor of the alternative hypothesis.
+
+Because this data was composed of two categorical variables, both of which have more than two levels, the only analysis available is the Chi-Square Independence Test. It is not possible to do a confidence interval, and as such I have no additional analysis comparisons to make.
+
+
+### Conclusion:
+
+In short, based on the above analysis we conclude that opinions on government spending for space exploration and confidence in organized religion are dependent. Opinions on space spending do vary based on confidence in organized religion.
+
+So, what I have learned is that a person's confidence level of organized religion does have impact on their opinions of government spending for space exploration.  This exercise was incredibly useful in better understanding how to perform a Chi-Square Independence Test.  However, I didn't draw and conclusions or gain insights about society and opinions beyond what was stated in the hypothesis test.
+
+Possible future research would be to analyze this data further and attempt to understanding how each level within each variable affects the other.  Can we conclude that people who have strong confidence in religion want more or less spending for space?  Can we conclude that people who have mistrust of organized religion want more or less spending for space?  I would be interested in learning more specifics through additional analysis.
+
+#### Thank you for taking the time to read through my paper!
+
+
+### Appendix
+
+Below is a sample extract of the original data use, the last 100 cases in the dataset.
+```{r}
+load(url("http://bit.ly/dasi_gss_data"))
+tail(gss[,c("natspac","conclerg")],100)
+
+```
+
+### References
+
+Below are references to the data set that was used for this project's analysis.
+
+Link to the dataset:
+http://bit.ly/dasi_gss_data
+
+FAQ on the original dataset: http://www3.norc.org/GSS/Templates/BaseTemplate.aspx?NRMODE=Published&NRNODEGUID=%7B2E75FB22-4D36-47...) 
+
+The codebook for the Coursera Extract: https://d396qusza40orc.cloudfront.net/statistics%2Fproject%2Fgss1.html)

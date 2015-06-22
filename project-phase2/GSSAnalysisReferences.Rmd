@@ -1,0 +1,7 @@
+---
+title: "GSS Analysis References"
+author: "Brianne Calandra"
+date: "April 19, 2015"
+output: html_document
+---
+
